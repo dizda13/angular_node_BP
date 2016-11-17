@@ -11,10 +11,10 @@ prijava.post('/prijava', function(request: Request, response: Response, next: Ne
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'root',
-  database : 'mydb'
+  host     : 'eu-cdbr-west-01.cleardb.com:3306',
+  user     : 'bd08922d88da6e',
+  password : '8651bcec',
+  database : '`heroku_4d519b9044708a5`'
 });
 connection.connect(function(err){
 if(!err) {
@@ -46,10 +46,10 @@ prijava.post('/dodaj', function(request: Request, response: Response, next: Next
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'root',
-  database : 'mydb'
+    host     : 'eu-cdbr-west-01.cleardb.com:3306',
+    user     : 'bd08922d88da6e',
+    password : '8651bcec',
+    database : '`heroku_4d519b9044708a5`'
 });
 connection.connect(function(err){
 if(!err) {
@@ -85,10 +85,10 @@ prijava.post('/search', function(request: Request, response: Response, next: Nex
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'root',
-  database : 'mydb'
+    host     : 'eu-cdbr-west-01.cleardb.com:3306',
+    user     : 'bd08922d88da6e',
+    password : '8651bcec',
+    database : '`heroku_4d519b9044708a5`'
 });
 connection.connect(function(err){
 if(!err) {
