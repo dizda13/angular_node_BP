@@ -95,8 +95,8 @@ connection.query('SELECT username,email,first_name,last_name,profile_picture fro
 connection.end();
   if (!err)
     //console.log('The solution is: ', rows);
-
-    response.send(rows);
+    response.writeHead(200, { 'Content-Type': 'application/json'});
+    response.end(JSON.stringify(rows));
   else
     console.log('Error while performing Query.');
 
