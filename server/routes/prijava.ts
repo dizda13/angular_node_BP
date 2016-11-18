@@ -11,7 +11,7 @@ prijava.post('/prijava', function(request: Request, response: Response, next: Ne
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-    host     : 'eu-cdbr-west-01.cleardb.com:3306',
+    host     : 'eu-cdbr-west-01.cleardb.com',
     user     : 'bd08922d88da6e',
     password : '8651bcec',
     database : 'heroku_4d519b9044708a5'
@@ -47,7 +47,7 @@ connection.end();
 prijava.post('/dodaj', function(request: Request, response: Response, next: NextFunction){
 
   var connection = mysql.createConnection({
-    host     : 'eu-cdbr-west-01.cleardb.com:3306',
+    host     : 'eu-cdbr-west-01.cleardb.com',
     user     : 'bd08922d88da6e',
     password : '8651bcec',
     database : 'heroku_4d519b9044708a5'
