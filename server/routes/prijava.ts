@@ -1,28 +1,30 @@
-import { Router, Request, Response, NextFunction } from 'express';
+  import { Router, Request, Response, NextFunction } from 'express';
 import * as Promise from "bluebird";
 import * as Sequelize from "sequelize";
 //import { sign } from 'jsonwebtoken';
 import { secret, length, digest } from '../config';
 //import { mysql } from 'mysql';
-
+var mysql = require('mysql');
 const prijava: Router = Router();
 
 prijava.post('/prijava', function(request: Request, response: Response, next: NextFunction){
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-  host     : 'eu-cdbr-west-01.cleardb.com:3306',
-  user     : 'bd08922d88da6e',
-  password : '8651bcec',
-  database : '`heroku_4d519b9044708a5`'
+    host     : 'eu-cdbr-west-01.cleardb.com:3306',
+    user     : 'bd08922d88da6e',
+    password : '8651bcec',
+    database : 'heroku_4d519b9044708a5'
 });
 connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ... nn");
 } else {
+    console.log(err);
     console.log("Error connecting database ... nn");
 }
 });
+
 console.log(request.body['username']);
 console.log(request.body['password']);
 
@@ -44,12 +46,11 @@ connection.end();
 
 prijava.post('/dodaj', function(request: Request, response: Response, next: NextFunction){
 
-  var mysql = require('mysql');
   var connection = mysql.createConnection({
     host     : 'eu-cdbr-west-01.cleardb.com:3306',
     user     : 'bd08922d88da6e',
     password : '8651bcec',
-    database : '`heroku_4d519b9044708a5`'
+    database : 'heroku_4d519b9044708a5'
 });
 connection.connect(function(err){
 if(!err) {
@@ -59,25 +60,6 @@ if(!err) {
 }
 });
 
-connection.query('INPUT INTO users(username, email, password, first_name, last_name, profile_picture) VALUES('+
-request.body['username'] + "," +
-request.body['email'] + "," +
-request.body['password'] + "," +
-request.body['first_name'] + "," +
-request.body['last_name'] + "," +
-request.body['profile_picture'] + ')' , function(err, rows, fields) {
-connection.end();
-  if (!err){
-    console.log(rows);
-    //console.log('The solution is: ', rows);
-    if(rows.length!=0)
-      response.json({prijava: true});
-    else
-      response.json({prijava: false});
-    }
-  else
-    console.log('Error while performing Query.');
-  });
 
 });
 
@@ -85,18 +67,29 @@ prijava.post('/search', function(request: Request, response: Response, next: Nex
 
   var mysql = require('mysql');
   var connection = mysql.createConnection({
-    host     : 'eu-cdbr-west-01.cleardb.com:3306',
-    user     : 'bd08922d88da6e',
-    password : '8651bcec',
-    database : '`heroku_4d519b9044708a5`'
+    host     : `eu-cdbr-west-01.cleardb.com`,
+    user     : `bd08922d88da6e`,
+    password : `8651bcec`,
+    database : `heroku_4d519b9044708a5`
 });
+
+/*var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'root',
+  database : 'mydb'
+});*/
+
 connection.connect(function(err){
 if(!err) {
     console.log("Database is connected ... nn");
+    console.log(err);
 } else {
     console.log("Error connecting database ... nn");
+    console.log(err);
 }
 });
+
 console.log(request.body['search']);
 connection.query('SELECT * from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
 connection.end();
@@ -105,6 +98,7 @@ connection.end();
     response.send(rows);
   else
     console.log('Error while performing Query.');
+
   });
 
 });
