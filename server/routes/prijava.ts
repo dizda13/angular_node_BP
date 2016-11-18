@@ -91,10 +91,11 @@ if(!err) {
 });
 
 console.log(request.body['search']);
-connection.query('SELECT * from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
+connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
 connection.end();
   if (!err)
     //console.log('The solution is: ', rows);
+
     response.send(rows);
   else
     console.log('Error while performing Query.');
