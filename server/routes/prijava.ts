@@ -93,10 +93,12 @@ if(!err) {
 console.log(request.body['search']);
 connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
 connection.end();
-  if (!err)
+  if (!err){
+
     //console.log('The solution is: ', rows);
-    response.writeHead(200, { 'Content-Type': 'application/json'});
-    response.end(JSON.stringify(rows));
+    //response.writeHead(200, { Content-Type: 'application/json'});
+    response.send({data : rows});
+  }
   else
     console.log('Error while performing Query.');
 
