@@ -106,5 +106,81 @@ connection.end();
 
 });
 
+prijava.post('/search', function(request: Request, response: Response, next: NextFunction){
+
+  var mysql = require('mysql');
+  var connection = mysql.createConnection({
+    host     : `eu-cdbr-west-01.cleardb.com`,
+    user     : `bd08922d88da6e`,
+    password : `8651bcec`,
+    database : `heroku_4d519b9044708a5`
+});
+
+/*var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'root',
+  database : 'mydb'
+});*/
+
+connection.connect(function(err){
+if(!err) {
+    console.log("Database is connected ... nn");
+    console.log(err);
+} else {
+    console.log("Error connecting database ... nn");
+    console.log(err);
+}
+});
+
+console.log(request.body['search']);
+connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
+connection.end();
+  if (!err){
+
+    //console.log('The solution is: ', rows);
+    //response.writeHead(200, { Content-Type: 'application/json'});
+    response.send({data : rows});
+  }
+  else
+    console.log('Error while performing Query.');
+
+  });
+
+});
+
+prijava.get('/testing', function(request: Request, response: Response, next: NextFunction){
+
+  var mysql = require('mysql');
+  var connection = mysql.createConnection({
+    host     : `eu-cdbr-west-01.cleardb.com`,
+    user     : `bd08922d88da6e`,
+    password : `8651bcec`,
+    database : `heroku_4d519b9044708a5`
+});
+
+
+connection.connect(function(err){
+if(!err) {
+    console.log("Database is connected ... nn");
+    console.log(err);
+} else {
+    console.log("Error connecting database ... nn");
+    console.log(err);
+}
+});
+
+connection.query('SELECT username,email,first_name,last_name,profile_picture from users', function(err, rows, fields) {
+connection.end();
+  if (!err){
+
+    response.send({data : rows});
+  }
+  else
+    console.log('Error while performing Query.');
+
+  });
+
+});
 
 export { prijava }
