@@ -18,9 +18,6 @@ app.use(compression());
 app.use(urlencoded({ extended: true }));
 
 // allow cors only for local dev
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
 
 // app.set('env', 'production');
 
