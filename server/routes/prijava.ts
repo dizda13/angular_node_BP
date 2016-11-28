@@ -67,33 +67,37 @@ if(!err) {
 
 prijava.post('/search', function(request: Request, response: Response, next: NextFunction){
   var mysql = require('mysql');
-  var connection = mysql.createConnection({
+  var connection = mysql.createPool({
     host     : `eu-cdbr-west-01.cleardb.com`,
     user     : `bd08922d88da6e`,
     password : `8651bcec`,
-    database : `heroku_4d519b9044708a5`
+    database : `heroku_4d519b9044708a5`,
+    connectionLimit: 10
 });
 
 
-connection.connect(function(err){
-if(!err) {
+//connection.connect(function(err){
+/*if(!err) {
     console.log("Database is connected ... nn");
     console.log(err);
 } else {
     console.log("Error connecting database ... nn");
     console.log(err);
 }
-});
+});*/
 
 console.log(request.body['search']);
 connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
-connection.end();
+//connection.end();
   if (!err){
 
     //console.log('The solution is: ', rows);
     //response.writeHead(200, { 'Content-Type': 'application/json'});
 
     response.json({data : rows});
+    connection.end(function(err) {
+      console.log('Connection ended');
+  });
   }
   else
     console.log('Error while performing Query.');
