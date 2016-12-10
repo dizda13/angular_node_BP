@@ -82,7 +82,7 @@ if(!err) {
 } else {
     response.json({success: false});
 }
-}
+});
 
 });
 
