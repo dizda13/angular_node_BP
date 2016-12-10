@@ -26,16 +26,19 @@ function logError(err, query = 'Query') {
 
 prijava.post('/prijava', function (request: Request, response: Response, next: NextFunction) {
 
-  let connection = getConnection();
-
   let username = request.body['username'];
   let password = request.body['password'];
 
-  console.log(username);
-  console.log(password);
+  if (!username || !password) {
+    response.status(400);
+    response.json({prijava: false, message: "Request should contain username and password!"});
+    return;
+  }
 
   password = crypto.createHash('sha1').update(password).digest('hex');
   console.log("Hashed password: " + password);
+
+  let connection = getConnection();
 
   connection.query('SELECT * from users where username=?', [username], function (err, rows, fields) {
     if (!err) {
@@ -82,8 +85,6 @@ prijava.post('/prijava', function (request: Request, response: Response, next: N
 
 prijava.post('/dodaj', function (request: Request, response: Response, next: NextFunction) {
 
-  let connection = getConnection();
-
   let username = request.body['username'];
   let email = request.body['email'];
   let password = request.body['password'];
@@ -91,7 +92,15 @@ prijava.post('/dodaj', function (request: Request, response: Response, next: Nex
   let lastName = request.body['last_name'];
   let profilePicture = request.body['profile_picture'];
 
+  if(!username || !email || !password || !firstName || !lastName || !profilePicture) {
+    response.status(400);
+    response.json({prijava: false, message: "Mising fields!"});
+    return;
+  }
+
   password = crypto.createHash('sha1').update(password).digest('hex');
+
+  let connection = getConnection();
 
   connection.query('INSERT INTO users(username, email, password, first_name, last_name, profile_picture) VALUES(?, ?, ?, ?, ?, ?)',
     [username, email, password, firstName, lastName, profilePicture], function (err, rows, fields) {
@@ -103,6 +112,9 @@ prijava.post('/dodaj', function (request: Request, response: Response, next: Nex
         });
         endConnection(connection);
       } else {
+        if (err.code == 'ER_DUP_ENTRY') {
+          response.status(409);
+        }
         response.json({
           data: {
             success: false
@@ -119,7 +131,9 @@ prijava.post('/search', function (request: Request, response: Response, next: Ne
   let connection = getConnection();
   let searchQuery = request.body['search'];
   console.log(searchQuery);
-  connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE ?', ['%' + searchQuery + '%'], function (err, rows, fields) {
+  let queryString = '%' + searchQuery + '%';
+  connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE :query ' +
+    'OR email LIKE :query OR first_name LIKE :query OR last_name LIKE :query', {query: queryString}, function (err, rows, fields) {
     if (!err) {
       response.json({data: rows});
       endConnection(connection);

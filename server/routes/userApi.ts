@@ -36,8 +36,9 @@ userApi.use((request: Request & { headers: { authorization: string } }, response
           message: 'Invalid token, please Log in first'
         });
       } else {
-        request.params.userId = rows[0].user_id;
+        request.body.id = rows[0].user_id;
         next();
+        endConnection(connection);
       }
     } else {
       logError(err, 'Authorization');
@@ -57,6 +58,66 @@ userApi.delete('/odjava', function (request: Request, response: Response, next: 
       response.json({odjava: true});
       endConnection(connection);
     } else {
+      logError(err);
+    }
+  });
+
+});
+
+userApi.get('/profile', function (request: Request, response: Response, next: NextFunction) {
+
+  let connection = getConnection();
+
+  let id = request.body.id;
+
+  connection.query('SELECT username,email,first_name,last_name,profile_picture from users WHERE id = ?', [id], function (err, rows, fields) {
+    if(!err) {
+      if(rows.length == 0) {
+        response.status(404);
+        response.json({message: 'wtf'});
+      } else {
+        response.status(200);
+        response.json({data: rows[0]});
+      }
+      endConnection(connection);
+    } else {
+      logError(err);
+    }
+  });
+
+});
+
+userApi.post('/contacts', function (request: Request, response: Response, next: NextFunction) {
+
+  let id = request.body.id;
+  let contactId = request.get('contactId');
+
+  if(!contactId) {
+    response.status(400);
+    response.json({message: "Missing contactId"});
+    return;
+  }
+
+  let connection = getConnection();
+
+  connection.query('INSERT INTO contacts (user_id1, user_id2) VALUES(?, ?)', [id, contactId], function (err, rows, fields) {
+    if(!err) {
+      response.status(200);
+      response.json({
+        data: {
+          success: true
+        }
+      });
+      endConnection(connection);
+    } else {
+      if (err.code == 'ER_DUP_ENTRY') {
+        response.status(409);
+      }
+      response.json({
+        data: {
+          success: false
+        }
+      });
       logError(err);
     }
   });
