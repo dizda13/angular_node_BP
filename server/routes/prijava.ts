@@ -1,5 +1,4 @@
 import {Router, Request, Response, NextFunction} from 'express';
-import {forEach} from "@angular/router/src/utils/collection";
 const crypto = require('crypto');
 const mysql = require('mysql');
 const prijava: Router = Router();
