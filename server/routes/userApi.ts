@@ -90,7 +90,7 @@ userApi.get('/profile', function (request: Request, response: Response, next: Ne
 userApi.post('/contacts', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
-  let contactId = request.get('contactId');
+  let contactId = request.body['contactId'];
 
   if(!contactId) {
     response.status(400);
@@ -122,6 +122,34 @@ userApi.post('/contacts', function (request: Request, response: Response, next: 
     }
   });
 
+});
+
+userApi.get('/contacts', function (request: Request, response: Response, next: NextFunction) {
+  let id = request.body.id;
+
+  let connection = getConnection();
+
+  // Should use named parameters, but it is not supported, and I dont want to include some other stuff right now :D
+  connection.query('SELECT username,email,first_name,last_name,profile_picture FROM users, ' +
+    '(SELECT user_id1, user_id2 FROM contacts WHERE user_id1 = ? OR user_id2 = ?) as foundContacts ' +
+    'WHERE (users.id = foundContacts.user_id1 OR users.id = foundContacts.user_id2) AND users.id != ?', [id, id, id], function (err, rows, fields) {
+    if(!err) {
+      response.status(200);
+      response.json({
+        data: {
+          rows
+        }
+      });
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
 });
 
 export {userApi}

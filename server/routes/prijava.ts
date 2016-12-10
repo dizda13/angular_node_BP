@@ -132,8 +132,8 @@ prijava.post('/search', function (request: Request, response: Response, next: Ne
   let searchQuery = request.body['search'];
   console.log(searchQuery);
   let queryString = '%' + searchQuery + '%';
-  connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE :query ' +
-    'OR email LIKE :query OR first_name LIKE :query OR last_name LIKE :query', {query: queryString}, function (err, rows, fields) {
+  connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE ? ' +
+    'OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?', [queryString, queryString, queryString, queryString], function (err, rows, fields) {
     if (!err) {
       response.json({data: rows});
       endConnection(connection);
