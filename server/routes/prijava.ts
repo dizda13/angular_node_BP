@@ -26,11 +26,16 @@ if(!err) {
 }
 });
 
-console.log(request.body['username']);
-console.log(request.body['password']);
+var username = request.body['username'];
+var password = request.body['password'];
 
-connection.query('SELECT * from users where username =\''+ request.body['username'] + '\' AND password= \'' + request.body['password']+'\'' , function(err, rows, fields) {
-connection.end();
+console.log(username);
+console.log(password);
+
+connection.query('SELECT * from users where username=? AND password=?' , [username, password] , function(err, rows, fields) {
+  connection.end(function(err) {
+    console.log('Connection ended');
+  });
   if (!err){
     //console.log(rows);
     //console.log('The solution is: ', rows);
@@ -61,6 +66,23 @@ if(!err) {
 }
 });
 
+var username = request.body['username'];
+var email = request.body['email'];
+var password = request.body['password'];
+var firstName = request.body['first_name'];
+var lastName = request.body['last_name'];
+var profilePicture = request.body['profile_picture'];
+
+connection.query('INSERT INTO users(username, email, password, first_name, last_name, profile_picture) VALUES(?, ?, ?, ?, ?, ?)',
+                [username, email, password, firstName, lastName, profilePicture] , function(err, rows, fields) {
+connection.end();
+console.log(err);
+if(!err) {
+  response.json({success: true});
+} else {
+    response.json({success: false});
+}
+}
 
 });
 
@@ -86,8 +108,11 @@ prijava.post('/search', function(request: Request, response: Response, next: Nex
 }
 });*/
 
-console.log(request.body['search']);
-connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE \'%'+request.body['search']+'%\'' , function(err, rows, fields) {
+
+var searchQuery = request.body['search'];
+
+console.log(searchQuery);
+connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE ?',['%' + searchQuery + '%'] , function(err, rows, fields) {
 //connection.end();
   if (!err){
 
@@ -99,8 +124,10 @@ connection.query('SELECT username,email,first_name,last_name,profile_picture fro
       console.log('Connection ended');
   });
   }
-  else
-    console.log('Error while performing Query.');
+  else{
+      console.log('Error while performing Query.');
+      console.log(err);
+  }
 
   });
 
@@ -126,8 +153,7 @@ if(!err) {
     console.log(err);
 }
 });
-
-connection.query('SELECT username,email,first_name,last_name,profile_picture from users', function(err, rows, fields) {
+connection.query('SELECT * from users', function(err, rows, fields) {
 connection.end();
   if (!err){
     //response.writeHead(200, { Content-Type: 'application/json'});
