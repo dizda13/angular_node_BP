@@ -87,6 +87,67 @@ userApi.get('/profile', function (request: Request, response: Response, next: Ne
 
 });
 
+userApi.put('/profile', function (request: Request, response: Response, next: NextFunction) {
+
+  let connection = getConnection();
+
+  let id = request.body.id;
+
+  let username = request.body['username'];
+  let email = request.body['email'];
+  let firstName = request.body['first_name'];
+  let lastName = request.body['last_name'];
+  let profilePicture = request.body['profile_picture'];
+
+  let query = 'UPDATE users SET ';
+
+  let fields = [];
+
+  if (username) {
+    fields.push('username = ' + connection.escape(username));
+  }
+
+  if (email) {
+    fields.push('email = ' + connection.escape(email));
+  }
+
+  if (firstName) {
+    fields.push('first_name = ' + connection.escape(firstName));
+  }
+
+  if (lastName) {
+    fields.push('last_name = ' + connection.escape(lastName));
+  }
+
+  if (profilePicture) {
+    fields.push('profile_picture = ' + connection.escape(profilePicture));
+  }
+
+  query += fields.join();
+
+  query += ' WHERE id = ' + connection.escape(id);
+
+  connection.query(query, function (err, rows, fields) {
+    if(!err) {
+      response.status(200);
+      response.json({
+        data: {
+          success: true
+        }
+      });
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
+
+});
+
 userApi.post('/contacts', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
