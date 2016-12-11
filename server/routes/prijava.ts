@@ -69,7 +69,7 @@ prijava.post('/prijava', function (request: Request, response: Response, next: N
       connection.query('INSERT INTO session(token, user_id) VALUES(?, ?)', [token, id], function (err, rows, fields) {
         if(!err) {
           response.status(200);
-          response.json({prijava: true, token: token});
+          response.json({prijava: true, token: token, id: id});
           endConnection(connection);
         } else {
           logError(err, "token saving");
