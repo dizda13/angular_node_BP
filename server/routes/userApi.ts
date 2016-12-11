@@ -27,11 +27,14 @@ function logError(err, query = 'Query') {
 userApi.use((request: Request & { headers: { authorization: string } }, response: Response, next: NextFunction) => {
   const token = request.headers.authorization;
 
+  console.log("Received token: " + token);
+
   let connection = getConnection();
 
   connection.query('SELECT * from session where token = ?', [token], function (err, rows, fields) {
     if(!err) {
       if(rows.length == 0) {
+        console.log("Token invalid!");
         return response.status(401).json({
           message: 'Invalid token, please Log in first'
         });
