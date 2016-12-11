@@ -44,6 +44,8 @@ prijava.post('/prijava', function (request: Request, response: Response, next: N
       if (rows.length == 0) {
         response.status(404);
         response.json({prijava: false});
+        endConnection(connection);
+        return;
       }
 
       let id = -1;
