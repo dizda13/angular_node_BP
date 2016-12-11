@@ -151,6 +151,74 @@ userApi.put('/profile', function (request: Request, response: Response, next: Ne
 
 });
 
+userApi.put('/profile/password', function (request: Request, response: Response, next: NextFunction) {
+
+  let id = request.body.id;
+
+  let currentPassword = request.body['current_password'];
+  let newPassword = request.body['new_password'];
+
+  if(!currentPassword || !newPassword) {
+    response.status(400);
+    response.json({message: "Request should contain current and new password"});
+    return;
+  }
+
+  if(currentPassword == newPassword) {
+    response.status(400);
+    response.json({message: "New password should not be same as old"});
+    return;
+  }
+
+  let password = crypto.createHash('sha1').update(currentPassword).digest('hex');
+
+  let connection = getConnection();
+
+  connection.query('SELECT * from users where id=?', [id], function (err, rows, fields) {
+    if (!err) {
+      if (rows.length == 0) {
+        response.status(404);
+        response.json({message: "User not found!"});
+        endConnection(connection);
+        return;
+      }
+
+      let test = -1;
+
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].password == password) {
+          test = rows[i].id;
+        }
+      }
+
+      if(test == -1) {
+        response.status(401);
+        response.json({message: "Old password is wrong!"});
+        endConnection(connection);
+        return;
+      }
+
+      newPassword = crypto.createHash('sha1').update(newPassword).digest('hex');
+
+      connection.query('UPDATE users SET password=? WHERE id=?', [newPassword, id], function (err, rows, fields) {
+        if(!err) {
+          response.status(200);
+          response.json({
+            data: {
+              success: true
+            }
+          });
+        } else {
+          logError(err, "Updating password");
+        }
+      });
+    } else {
+      logError(err, "Finding user");
+    }
+  });
+
+});
+
 userApi.post('/contacts', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
