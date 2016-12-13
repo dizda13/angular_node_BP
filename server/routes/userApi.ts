@@ -222,17 +222,17 @@ userApi.put('/profile/password', function (request: Request, response: Response,
 userApi.post('/contacts', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
-  let contactId = request.body['contactId'];
+  let username = request.body['username'];
 
   if(!contactId) {
     response.status(400);
-    response.json({message: "Missing contactId"});
+    response.json({message: "Missing username"});
     return;
   }
 
   let connection = getConnection();
 
-  connection.query('INSERT INTO contacts (user_id1, user_id2) VALUES(?, ?)', [id, contactId], function (err, rows, fields) {
+  connection.query('INSERT INTO contacts (user_id1, user_id2) VALUES(?, (SELECT id FROM users WHERE username=?))', [id, username], function (err, rows, fields) {
     if(!err) {
       response.status(200);
       response.json({
