@@ -224,7 +224,7 @@ userApi.post('/contacts', function (request: Request, response: Response, next: 
   let id = request.body.id;
   let username = request.body['username'];
 
-  if(!contactId) {
+  if(!username) {
     response.status(400);
     response.json({message: "Missing username"});
     return;
