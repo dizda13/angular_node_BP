@@ -93,7 +93,7 @@ prijava.post('/dodaj', function (request: Request, response: Response, next: Nex
   let lastName = request.body['last_name'];
   let profilePicture = request.body['profile_picture'];
 
-  if(!username || !email || !password || !firstName || !lastName || !profilePicture) {
+  if(!username || !email || !password || !firstName || !lastName) {
     response.status(400);
     response.json({prijava: false, message: "Mising fields!"});
     return;
