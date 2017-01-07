@@ -256,10 +256,10 @@ userApi.post('/contacts', function (request: Request, response: Response, next: 
 
 });
 
-userApi.delete('/contacts', function (request: Request, response: Response, next: NextFunction) {
+userApi.delete('/contacts/:id', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
-  let contactId = request.body['contactId'];
+  let contactId = request.params['id'];
 
   if(!contactId) {
     response.status(400);
