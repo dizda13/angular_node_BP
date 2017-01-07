@@ -269,7 +269,7 @@ userApi.delete('/contacts/:id', function (request: Request, response: Response, 
 
   let connection = getConnection();
 
-  connection.query('DELETE FROM contacts where (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)', [id, contactId, contactId, id], function (err, rows, fields) {
+  connection.query('DELETE FROM contacts where (user_id1 = ? AND user_id2 = (SELECT id FROM users WHERE username=?)) OR (user_id1 = (SELECT id FROM users WHERE username=?) AND user_id2 = ?)', [id, contactId, contactId, id], function (err, rows, fields) {
     if(!err) {
       response.status(200);
       response.json({
