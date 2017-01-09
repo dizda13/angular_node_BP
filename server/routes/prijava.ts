@@ -93,7 +93,7 @@ prijava.post('/dodaj', function (request: Request, response: Response, next: Nex
   let lastName = request.body['last_name'];
   let profilePicture = request.body['profile_picture'];
 
-  if(!username || !email || !password || !firstName || !lastName || !profilePicture) {
+  if(!username || !email || !password || !firstName || !lastName) {
     response.status(400);
     response.json({prijava: false, message: "Mising fields!"});
     return;
@@ -133,7 +133,7 @@ prijava.post('/search', function (request: Request, response: Response, next: Ne
   let searchQuery = request.body['search'];
   console.log(searchQuery);
   let queryString = '%' + searchQuery + '%';
-  connection.query('SELECT username,email,first_name,last_name,profile_picture from users where username LIKE ? ' +
+  connection.query('SELECT id, username,email,first_name,last_name,profile_picture from users where username LIKE ? ' +
     'OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?', [queryString, queryString, queryString, queryString], function (err, rows, fields) {
     if (!err) {
       response.json({data: rows});

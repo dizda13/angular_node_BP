@@ -73,7 +73,7 @@ userApi.get('/profile', function (request: Request, response: Response, next: Ne
 
   let id = request.body.id;
 
-  connection.query('SELECT username,email,first_name,last_name,profile_picture from users WHERE id = ?', [id], function (err, rows, fields) {
+  connection.query('SELECT id, username,email,first_name,last_name,profile_picture from users WHERE id = ?', [id], function (err, rows, fields) {
     if(!err) {
       if(rows.length == 0) {
         response.status(404);
@@ -256,10 +256,10 @@ userApi.post('/contacts', function (request: Request, response: Response, next: 
 
 });
 
-userApi.delete('/contacts', function (request: Request, response: Response, next: NextFunction) {
+userApi.delete('/contacts/:id', function (request: Request, response: Response, next: NextFunction) {
 
   let id = request.body.id;
-  let contactId = request.body['contactId'];
+  let contactId = request.params['id'];
 
   if(!contactId) {
     response.status(400);
@@ -269,7 +269,7 @@ userApi.delete('/contacts', function (request: Request, response: Response, next
 
   let connection = getConnection();
 
-  connection.query('DELETE FROM contacts where (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)', [id, contactId, contactId, id], function (err, rows, fields) {
+  connection.query('DELETE FROM contacts where (user_id1 = ? AND user_id2 = (SELECT id FROM users WHERE username=?)) OR (user_id1 = (SELECT id FROM users WHERE username=?) AND user_id2 = ?)', [id, contactId, contactId, id], function (err, rows, fields) {
     if(!err) {
       response.status(200);
       response.json({
@@ -296,7 +296,7 @@ userApi.get('/contacts', function (request: Request, response: Response, next: N
   let connection = getConnection();
 
   // Should use named parameters, but it is not supported, and I dont want to include some other stuff right now :D
-  connection.query('SELECT username,email,first_name,last_name,profile_picture FROM users, ' +
+  connection.query('SELECT id, username,email,first_name,last_name,profile_picture FROM users, ' +
     '(SELECT user_id1, user_id2 FROM contacts WHERE user_id1 = ? OR user_id2 = ?) as foundContacts ' +
     'WHERE (users.id = foundContacts.user_id1 OR users.id = foundContacts.user_id2) AND users.id != ?', [id, id, id], function (err, rows, fields) {
     if(!err) {
