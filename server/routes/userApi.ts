@@ -302,8 +302,78 @@ userApi.get('/contacts', function (request: Request, response: Response, next: N
     if(!err) {
       response.status(200);
       response.json({
-        data: rows
+        data: {
+          success: true
+        }
       });
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
+});
+
+userApi.put('/ip-address', function(request: Request, response: Response, next: NextFunction) {
+  let id = request.body.id;
+
+  let ip_address = request.body['ip-address'];
+
+  if(!ip_address){
+    response.status(400);
+    response.json({message: "Missing ip address"});
+    return;
+  }
+
+  let connection = getConnection();
+
+  connection.query('UPDATE users SET ip_address=? WHERE id=?', [ip_address,id], function (err, rows, fields) {
+  if(!err) {
+    response.status(200);
+    response.json({
+      data: {
+        success: true
+      }
+    });
+    endConnection(connection);
+  } else {
+    response.json({
+      data: {
+        success: false
+      }
+    });
+    logError(err);
+  }
+});
+
+});
+
+userApi.get('/ip-address/:username', function(request: Request, response: Response, next: NextFunction) {
+  let id = request.body.id;
+
+  let username = request.params.username;
+
+  if (!username) {
+    response.status(400);
+    response.json({message: "Missing ip address"});
+    return;
+  }
+
+  let connection = getConnection();
+
+  connection.query('SELECT ip_address FROM users WHERE username=?', [username], function (err, rows, fields) {
+    if (!err) {
+      if (rows.length == 0) {
+        response.status(404);
+        response.json({message: 'wtf'});
+      } else {
+        response.status(200);
+        response.json({data: rows[0]});
+      }
       endConnection(connection);
     } else {
       response.json({
