@@ -303,7 +303,7 @@ userApi.get('/contacts', function (request: Request, response: Response, next: N
       response.status(200);
       response.json({
         data: {
-          success: true
+          success: rows
         }
       });
       endConnection(connection);
