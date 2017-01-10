@@ -392,7 +392,7 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
 
   if (!username) {
     response.status(400);
-    response.json({message: "Missing ip address"});
+    response.json({message: "Missing username of friend"});
     return;
   }
 
@@ -437,5 +437,60 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
 
 
 });
+
+userApi.put('/chat/:username', function(request: Request, response: Response, next: NextFunction) {
+  let id = request.body.id;
+  let id2=10;
+  let username = request.params.username;
+  let message  = request.body.message
+  if (!username) {
+    response.status(400);
+    response.json({message: "Missing username"});
+    return;
+  }
+
+  let connection = getConnection();
+
+  connection.query('SELECT id FROM users WHERE username=?', [username], function (err, rows, fields) {
+    if (!err) {
+      if (rows.length == 0) {
+        response.status(404);
+        response.json({message: 'wtf'});
+      } else {
+        id2=rows[0].id;
+        console.log(rows[0].id);
+        connection.query('INSERT INTO messages (sender_id,receiver_id,message, time) VALUES (?,?,?,NOW())', [id,id2,message], function (err, rows, fields) {
+          if (!err) {
+            response.status(200);
+            response.json({
+              data: {
+                success: true
+              }
+            });
+            endConnection(connection);
+          } else {
+            response.json({
+              data: {
+                success: false
+              }
+            });
+            logError(err);
+          }
+        });
+      }
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
+
+
+});
+
 
 export {userApi}
