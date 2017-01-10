@@ -411,13 +411,8 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
           'JOIN users as receive ON receive.id=receiver_id  WHERE (sender_id=? AND receiver_id=?)  OR (sender_id=? AND receiver_id=?)' +
           'ORDER BY messages.time', [id,id2,id2,id], function (err, rows, fields) {
           if (!err) {
-            if (rows.length == 0) {
-              response.status(404);
-              response.json({data: rows});
-            } else {
               response.status(200);
               response.json({data: rows});
-            }
             endConnection(connection);
           } else {
             response.json({
