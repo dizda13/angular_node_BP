@@ -303,6 +303,7 @@ userApi.get('/contacts', function (request: Request, response: Response, next: N
       response.status(200);
       response.json({
         data: rows
+
       });
       endConnection(connection);
     } else {
@@ -368,6 +369,59 @@ userApi.get('/ip-address/:username', function(request: Request, response: Respon
       if (rows.length == 0) {
         response.status(404);
         response.json({message: 'wtf'});
+      } else {
+        response.status(200);
+        response.json({data: rows[0]});
+      }
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
+});
+
+userApi.get('/chat/:username', function(request: Request, response: Response, next: NextFunction) {
+  let id = request.body.id;
+
+  let username = request.params.username;
+
+  if (!username) {
+    response.status(400);
+    response.json({message: "Missing ip address"});
+    return;
+  }
+
+  let connection = getConnection();
+   let id2="";
+  connection.query('SELECT id FROM users WHERE username=?', [username], function (err, rows, fields) {
+    if (!err) {
+      if (rows.length == 0) {
+        response.status(404);
+        response.json({message: 'wtf'});
+      } else {
+        id2=rows[0];
+      }
+      endConnection(connection);
+    } else {
+      response.json({
+        data: {
+          success: false
+        }
+      });
+      logError(err);
+    }
+  });
+
+  connection.query('SELECT * FROM messages WHERE (sender_id=? AND receiver_id=?)  OR (sender_id=? AND receiver_id=?)', [id,id2,id2,id], function (err, rows, fields) {
+    if (!err) {
+      if (rows.length == 0) {
+        response.status(404);
+        response.json({message: 'hepek'});
       } else {
         response.status(200);
         response.json({data: rows[0]});
