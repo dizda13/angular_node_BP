@@ -302,9 +302,7 @@ userApi.get('/contacts', function (request: Request, response: Response, next: N
     if(!err) {
       response.status(200);
       response.json({
-        data: {
-          rows
-        }
+        data: rows
       });
       endConnection(connection);
     } else {
