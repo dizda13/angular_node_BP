@@ -387,7 +387,7 @@ userApi.get('/ip-address/:username', function(request: Request, response: Respon
 
 userApi.get('/chat/:username', function(request: Request, response: Response, next: NextFunction) {
   let id = request.body.id;
-
+  let id2=10;
   let username = request.params.username;
 
   if (!username) {
@@ -397,14 +397,37 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
   }
 
   let connection = getConnection();
-   let id2="";
+
   connection.query('SELECT id FROM users WHERE username=?', [username], function (err, rows, fields) {
     if (!err) {
       if (rows.length == 0) {
         response.status(404);
         response.json({message: 'wtf'});
       } else {
-        id2=rows[0];
+        id2=rows[0].id;
+        console.log(rows[0].id);
+        connection.query('SELECT messages.id, send.username as sender_id, receive.username as receiver_id, message, time FROM messages ' +
+          'JOIN users as send ON send.id=sender_id ' +
+          'JOIN users as receive ON receive.id=receiver_id  WHERE (sender_id=? AND receiver_id=?)  OR (sender_id=? AND receiver_id=?)' +
+          'ORDER BY messages.time', [id,id2,id2,id], function (err, rows, fields) {
+          if (!err) {
+            if (rows.length == 0) {
+              response.status(404);
+              response.json({message: 'hepek'});
+            } else {
+              response.status(200);
+              response.json({data: rows});
+            }
+            endConnection(connection);
+          } else {
+            response.json({
+              data: {
+                success: false
+              }
+            });
+            logError(err);
+          }
+        });
       }
       endConnection(connection);
     } else {
@@ -417,25 +440,7 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
     }
   });
 
-  connection.query('SELECT * FROM messages WHERE (sender_id=? AND receiver_id=?)  OR (sender_id=? AND receiver_id=?)', [id,id2,id2,id], function (err, rows, fields) {
-    if (!err) {
-      if (rows.length == 0) {
-        response.status(404);
-        response.json({message: 'hepek'});
-      } else {
-        response.status(200);
-        response.json({data: rows[0]});
-      }
-      endConnection(connection);
-    } else {
-      response.json({
-        data: {
-          success: false
-        }
-      });
-      logError(err);
-    }
-  });
+
 });
 
 export {userApi}
