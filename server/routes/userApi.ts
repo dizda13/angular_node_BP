@@ -413,7 +413,7 @@ userApi.get('/chat/:username', function(request: Request, response: Response, ne
           if (!err) {
             if (rows.length == 0) {
               response.status(404);
-              response.json({message: 'hepek'});
+              response.json({data: rows});
             } else {
               response.status(200);
               response.json({data: rows});
