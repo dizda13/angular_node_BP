@@ -11,6 +11,9 @@ import { feedRouter } from './routes/feed';
 import { prijava } from './routes/prijava';
 import { userApi } from './routes/userApi';
 const app: express.Application = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var map=new Object();
 
 app.disable('x-powered-by');
 
@@ -54,6 +57,30 @@ app.use(function(err: any, req: express.Request, res: express.Response, next: ex
     error: {},
     message: err.message
   });
+});
+
+io.on('connection', function(socket) {
+  //console.log(socket.request.connection.remoteAddress);
+  console.log('new connection');
+  map[socket.handshake.query.userName]=socket.id;
+  socket.emit();
+  console.log(map['Dizda']);
+  console.log(socket.id);
+  console.log(socket.handshake.query.userName);
+  socket.on('chatMessageToSocketServer', function(msg,func){
+    console.log(msg);
+    func("Message recieved!",socket.handshake.query.userName);
+    let name = socket.handshake.query.sentMessageUsername;
+    console.log(name);
+    socket.emit('receive');
+  });
+
+
+
+});
+
+server.listen(4041, function() {
+  console.log('server up and running at 4041 port');
 });
 
 export { app }

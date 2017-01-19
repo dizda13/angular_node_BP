@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const mysql = require('mysql');
 const userApi: Router = Router();
 
+
+
 function getConnection() {
   return mysql.createConnection({
     host: 'eu-cdbr-west-01.cleardb.com',
@@ -489,6 +491,10 @@ userApi.put('/chat/:username', function(request: Request, response: Response, ne
     }
   });
 
+
+});
+
+userApi.get('/trySocket', function (request: Request, response: Response, next: NextFunction) {
 
 });
 

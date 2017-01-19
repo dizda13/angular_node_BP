@@ -2,7 +2,6 @@
   <h1>
     {{title}}
   </h1>
-
   <code>
     From Express: {{observable$ | async | json}}
   </code>
@@ -13,6 +12,7 @@
   </ul>
   <router-outlet></router-outlet>
 </div>
-
+<script src="../../node_modules/socket.io/lib/socket.js"></script>
+<script src="../../node_modules/socket.io-client/lib/socket.js"></script>
 <!-- Development tools -->
 <ngrx-store-log-monitor toggleCommand="ctrl-h" positionCommand="ctrl-m"></ngrx-store-log-monitor>
