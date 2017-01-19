@@ -27,12 +27,13 @@ export class AppComponent {
 
 
   constructor(http: Http) {
+
     let reference = this;
     this.observable$ = http
       .get('/api/public/simple')
       .map((response: Response) => response.json());
       this.socket=io('http://localhost:4041', {query: "userName=Dizda"});
-    //console.log(this.socket.request.connection.remoteAddress);
+
     this.socket.on('receive', function(){
       console.log('hepek');
     });
